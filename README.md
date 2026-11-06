@@ -24,7 +24,8 @@ checkout path. Relative document paths and `build/mermaid/` output remain
 relative to the **content** repository.
 
 Consumers should pin an immutable release tag or full commit SHA. The initial
-consolidation release is **`v1.0.0`**. Do not track `main`.
+consolidation release is `v1.0.0`; the current compatibility/release patch is
+**`v1.0.1`**. Do not track `main`.
 
 Example workflow checkout:
 
@@ -32,7 +33,7 @@ Example workflow checkout:
 - uses: actions/checkout@v4
   with:
     repository: huntermills707/confluence-docs-sync
-    ref: v1.0.0
+    ref: v1.0.1
     path: .confluence-docs-sync
     persist-credentials: false
 ```
@@ -101,9 +102,13 @@ tests/                   offline characterization and entry-point tests
 requirements.txt         pinned Python runtime dependency
 VERSION                  release version without the leading "v"
 CHANGELOG.md             release history
+COMPATIBILITY.md         versioned consumer and runtime contract
+GOVERNANCE.md            required review, CI, tag, and access controls
 RELEASING.md             release and consumer upgrade procedure
 .github/workflows/       tool PR/push regression tests
 ```
 
-See [RELEASING.md](RELEASING.md) to publish a fix or upgrade/roll back consumer
-pins. Content repositories must not carry copies of anything under `scripts/`.
+See [COMPATIBILITY.md](COMPATIBILITY.md) for the versioned consumer contract,
+[GOVERNANCE.md](GOVERNANCE.md) for required repository controls, and
+[RELEASING.md](RELEASING.md) to publish a fix or upgrade/roll back consumer pins.
+Content repositories must not carry copies of anything under `scripts/`.

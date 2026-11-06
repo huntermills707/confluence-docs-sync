@@ -43,8 +43,9 @@ import uuid
 try:
     from markdown_it import MarkdownIt
 except ImportError:  # pragma: no cover
-    print("ERROR: markdown-it-py is required. Run: pip install -r requirements.txt",
-          file=sys.stderr)
+    requirements = pathlib.Path(__file__).resolve().parent.parent / "requirements.txt"
+    print(f"ERROR: markdown-it-py is required. Run: python -m pip install -r "
+          f"\"{requirements}\"", file=sys.stderr)
     raise SystemExit(2)
 
 TOOL = "gh-confluence-sync-poc/1.0"
