@@ -1,8 +1,13 @@
+import builtins
+import contextlib
 import hashlib
+import io
 import pathlib
+import runpy
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 TOOL_ROOT = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(TOOL_ROOT / "scripts"))
@@ -76,6 +81,22 @@ class CharacterizationTests(unittest.TestCase):
         parent = {"id": "parent", "source_path": "docs/parent/_index.md"}
         ordered = sync.creation_order([(child, "parent"), (parent, "ROOT")])
         self.assertEqual(["parent", "child"], [entry["id"] for entry, _ in ordered])
+
+    def test_missing_dependency_points_to_tool_requirements(self):
+        real_import = builtins.__import__
+
+        def block_markdown_it(name, *args, **kwargs):
+            if name == "markdown_it":
+                raise ImportError("simulated missing dependency")
+            return real_import(name, *args, **kwargs)
+
+        stderr = io.StringIO()
+        with mock.patch("builtins.__import__", side_effect=block_markdown_it), \
+                contextlib.redirect_stderr(stderr):
+            with self.assertRaises(SystemExit) as raised:
+                runpy.run_path(str(TOOL_ROOT / "scripts" / "sync.py"))
+        self.assertEqual(2, raised.exception.code)
+        self.assertIn(str(TOOL_ROOT / "requirements.txt"), stderr.getvalue())
 
     def test_existing_property_version_is_incremented(self):
         class PropertyClient:
